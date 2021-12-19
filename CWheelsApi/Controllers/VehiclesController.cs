@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CWheelsApi.Data;
+using CWheelsApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,36 +14,53 @@ namespace CWheelsApi.Controllers
     [ApiController]
     public class VehiclesController : ControllerBase
     {
+        private CWheelsDbContext _cWheelsDbContext;
+
+        public VehiclesController(CWheelsDbContext cWheelsDbContext)
+        {
+            _cWheelsDbContext = cWheelsDbContext;
+        }
+
         // GET: api/<VehiclesController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Vehicle> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _cWheelsDbContext.Vehicles;
         }
 
         // GET api/<VehiclesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Vehicle Get(int id)
         {
-            return "value";
+           var vehicle = _cWheelsDbContext.Vehicles.Find(id);
+           return vehicle;
         }
 
         // POST api/<VehiclesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] Vehicle vehicle)
         {
+            _cWheelsDbContext.Vehicles.Add(vehicle);
+            _cWheelsDbContext.SaveChanges();
         }
 
         // PUT api/<VehiclesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] Vehicle vehicle)
         {
+           var entity = _cWheelsDbContext.Vehicles.Find(id);
+            entity.Title = vehicle.Title;
+            entity.Price = vehicle.Price;
+            _cWheelsDbContext.SaveChanges();
         }
 
         // DELETE api/<VehiclesController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            var vehicle = _cWheelsDbContext.Vehicles.Find(id);
+            _cWheelsDbContext.Vehicles.Remove(vehicle);
+            _cWheelsDbContext.SaveChanges();
         }
     }
 }

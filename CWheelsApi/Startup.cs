@@ -1,7 +1,9 @@
+using CWheelsApi.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,10 +28,11 @@ namespace CWheelsApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<CWheelsDbContext>(option => option.UseSqlServer(@"Data Source=(localdb)\ProjectsV13;Initial Catalog=CWheelsDb;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CWheelsDbContext cWheelsDbContext)
         {
             if (env.IsDevelopment())
             {
@@ -39,6 +42,8 @@ namespace CWheelsApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            cWheelsDbContext.Database.EnsureCreated();
 
             app.UseAuthorization();
 
